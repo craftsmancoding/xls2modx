@@ -183,6 +183,21 @@ class ImportCommand extends Command
             // TODO : check for overwrite
             $Resource->set($k, $v);
         }
+
+        // Generate alias
+        if (!$alias = $Resource->get('alias'))
+        {
+            $alias = $Resource->cleanAlias($Resource->get('pagetitle'));
+            //$friendly_urls = $this->modx->getOption('friendly_urls');
+            $aliasPath = $Resource->getAliasPath($alias, $Resource->toArray());
+            $Resource->set('alias', $alias);
+            $Resource->set('uri', $aliasPath);
+//            print $alias ."\n";
+//            print $aliasPath ."\n";
+//            exit;
+        }
+
+
         if(!$Resource->save())
         {
             $output->writeln('<error>There was a problem creating Resource</error>');
