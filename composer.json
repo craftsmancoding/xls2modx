@@ -21,7 +21,7 @@
     },    
     "require": {
         "php": ">=5.3",
-        "phpoffice/phpexcel": "dev-develop",
+        "phpoffice/phpexcel": "dev-master",
         "symfony/filesystem": "dev-master",
         "symfony/finder": "dev-master",
         "symfony/console": "dev-master",
