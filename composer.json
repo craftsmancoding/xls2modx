@@ -1,0 +1,36 @@
+{
+    "name": "craftsmancoding/xls2modx",
+    "description": "Command Line Utility for importing an XLS sheet into MODX as resources (pages)",
+    "type": "library",
+    "keywords": ["modx", "xls", "import", "cli"],
+    "homepage": "http://github.com/craftsmancoding/xls2modx",
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Everett Griffiths",
+            "email": "everett@craftsmancoding.com",
+            "homepage": "http://craftsmancoding.com"
+        }        
+    ],
+    "support": {
+        "email": "donotreply@craftsmancoding.org",
+        "issues": "http://github.com/craftsmancoding/xls2modx/issues",
+        "forum": "http://forums.modx.com/",
+        "wiki": "http://github.com/craftsmancoding/xls2modx/wiki",
+        "source": "http://github.com/craftsmancoding/xls2modx"
+    },    
+    "require": {
+        "php": ">=5.3",
+        "phpoffice/phpexcel": "dev-develop",
+        "symfony/filesystem": "dev-master",
+        "symfony/finder": "dev-master",
+        "symfony/console": "dev-master",
+        "symfony/yaml": "3.0.*@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Xls2modx\\": ["src/"]
+        },
+        "files": ["src/helper.php"]
+    }
+}

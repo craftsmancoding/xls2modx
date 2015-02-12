@@ -1,0 +1,74 @@
+# Mappings use a colon followed by a space (: ) to mark each key/value pair
+# Specify any valid MODX column name to the right of each XLS column.
+# There is a list of valid column names in the 'Hardcoded-Values' section.
+xls2modx:
+    'Project number': ''
+    'Project name': 'pagetitle'
+    'Project type 1': 'project_type'
+    'Project type 2': ''
+    Year: 'project_year'
+    Status: 'project_status'
+    Scale: 'project_scale'
+    'Link to project page?': ''
+    'Photo?': ''
+    Address: 'project_location'
+    Description: ['introtext','content']
+
+# Optionally define any Template Variables (TVs) here -- just uncomment the list to get started.
+# Use a hyphen and specify the unique TV name.
+# Once you have defined TVs here, you can use them in your column mappings.
+TVs:
+    - project_type
+    - project_location
+    - project_year
+    - project_status
+    - project_scale
+
+# Configuration Settings:
+Config:
+    identifier: pagetitle  # columns(s) with unique values used to check if a row has already been imported.
+    update: true # if true, updated values in the XLS will be updated in MODX on successive imports.
+
+# Hard-code values for any column here, e.g. if you want all imported records
+# to be children of the same parent or use the same template.
+Hardcoded-Values:
+    type: ''
+    contentType: ''
+    pagetitle: ''
+    longtitle: ''
+    description: ''
+    link_attributes: ''
+    published: 1
+    pub_date: ''
+    unpub_date: ''
+    parent: 2
+    isfolder: ''
+    introtext: ''
+    content: ''
+    richtext: ''
+    template: 6
+    menuindex: ''
+    searchable: ''
+    cacheable: ''
+    createdby: 9
+    createdon: 1423775981
+    editedby: ''
+    editedon: ''
+    deleted: ''
+    deletedon: ''
+    deletedby: ''
+    publishedon: 1423775981
+    publishedby: 9
+    menutitle: ''
+    donthit: ''
+    privateweb: ''
+    privatemgr: ''
+    content_dispo: ''
+    hidemenu: ''
+    class_key: 'Article'
+    context_key: 'web'
+    content_type: 1
+    uri_override: ''
+    hide_children_in_tree: ''
+    show_in_tree: ''
+    properties: ''
