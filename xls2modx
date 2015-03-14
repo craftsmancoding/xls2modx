@@ -9,13 +9,15 @@
  *
  * php xls2modx <function> [arguments]
  *
- * php modxbackup help [function-name]
+ * php xls2modx help [function-name]
  *
  */
 require_once dirname(__FILE__).'/vendor/autoload.php';
 
 use Xls2modx\Console\Command\ImportCommand;
-use Xls2modx\Console\Command\MapCommand;
+use Xls2modx\Console\Command\ExportCommand;
+use Xls2modx\Console\Command\MapExportCommand;
+use Xls2modx\Console\Command\MapImportCommand;
 
 
 use Symfony\Component\Console\Application;
@@ -23,7 +25,9 @@ use Symfony\Component\Console\Application;
 $application = new Application('xls2modx', '1.0');
 
 $application->add(new ImportCommand());
-$application->add(new MapCommand());
+$application->add(new ExportCommand());
+$application->add(new MapImportCommand());
+$application->add(new MapExportCommand());
 $application->run();
 
 /*EOF*/

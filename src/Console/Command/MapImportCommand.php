@@ -10,15 +10,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 //use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Dumper;
 
-class MapCommand extends Command
+class MapImportCommand extends Command
 {
     protected function configure()
     {
         $this
-            ->setName('map')
-            ->setDescription('Parse the indicated Excel file and generate a sample map.yml file that you can modify to define the mappings from this file to MODX columns.')
+            ->setName('map:import')
+            ->setDescription('Parse the indicated Excel file and generate a sample import.yml file that you can modify to define the mappings from this file\'s columns to MODX fields.')
             ->addArgument('source', InputArgument::REQUIRED, 'Path to Excel file.')
-            ->addArgument('destination', InputArgument::OPTIONAL, 'Destination file.', 'map.yml')
+            ->addArgument('destination', InputArgument::OPTIONAL, 'Destination file.', 'import.yml')
             ->addOption(
                 'overwrite',
                 'o',
@@ -87,21 +87,18 @@ class MapCommand extends Command
         unset($page_cols['alias']);
         unset($page_cols['uri']);
 
-        //print_r($page_cols); exit;
-        //print_r($map); exit;
+
         $hardcoded = array();
         foreach ($page_cols as $k => $v)
         {
             $hardcoded[$k] = '';
         }
 
-        $tvs = array();
-
         $dumper = new Dumper();
 
         $out = "# Mappings use a colon followed by a space (: ) to mark each key/value pair\n";
-        $out .= "# Specify any valid MODX column name to the right of each XLS column.\n";
-        $out .= "# There is a list of valid column names in the 'Hardcoded-Values' section.\n";
+        $out = "# Format is {XLS-Column-Name} : {MODX-Field-Name}\n";
+        $out .= "# There is a list of valid MODX field names in the 'Hardcoded-Values' section.\n";
         $out .= "# Any column without a mapping will be ignored and not included in the import.\n";
         $out .= "# If one XLS column needs to map to 2 or more MODX columns, use square-brackets to define an array.\n";
         $out .= $dumper->dump(array('xls2modx'=> $map), 2);
@@ -116,7 +113,7 @@ class MapCommand extends Command
         $out .= "# Configuration Settings:\n";
         $out .= "Config:\n";
         $out .= "    identifier: pagetitle  # columns(s) with unique values used to check if a row has already been imported.\n";
-        $out .= "    update: true # if true, updated values in the XLS will be updated in MODX on successive imports.\n";
+        $out .= "    update: true # if true, matching rows in the XLS will be updated in MODX on successive imports.\n";
         $out .= "\n";
         $out .= "# Hard-code values for any column here, e.g. if you want all imported records\n";
         $out .= "# to be children of the same parent or use the same template.\n";
@@ -128,7 +125,7 @@ class MapCommand extends Command
         file_put_contents($destination, $out);
 
         $output->writeln('<fg=green>Success!</fg=green>');
-        $output->writeln('Edit the '.$destination.' to define the mapping from your XLS columns to the MODX columns.');
+        $output->writeln('Edit the '.$destination.' to define the mapping from your XLS columns to the MODX fields.');
     }
 }
 /*EOF*/

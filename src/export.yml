@@ -1,0 +1,54 @@
+# Mappings use a colon followed by a space (: ) to mark each key/value pair
+# Format is {MODX-Field-Name} : {XLS-Column-Name}
+# If you don't wish to export a field, delete that row from this config file,
+# comment it out out using a '#', or leave the XLS column name blank.
+# If a single MODX field should be written to multiple columns, use square brackets
+# to define an array, e.g. pagetitle: [columnone,columntwo].
+modx2xls:
+    id: id
+    type: type
+    contentType: contentType
+    pagetitle: pagetitle
+    longtitle: longtitle
+    description: description
+    alias: alias
+    link_attributes: link_attributes
+    published: published
+    pub_date: pub_date
+    unpub_date: unpub_date
+    parent: parent
+    isfolder: isfolder
+    introtext: introtext
+    content: content
+    richtext: richtext
+    template: template
+    menuindex: menuindex
+    searchable: searchable
+    cacheable: cacheable
+    createdby: createdby
+    createdon: createdon
+    editedby: editedby
+    editedon: editedon
+    deleted: deleted
+    deletedon: deletedon
+    deletedby: deletedby
+    publishedon: publishedon
+    publishedby: publishedby
+    menutitle: menutitle
+    donthit: donthit
+    privateweb: privateweb
+    privatemgr: privatemgr
+    content_dispo: content_dispo
+    hidemenu: hidemenu
+    class_key: class_key
+    context_key: context_key
+    content_type: content_type
+    uri: uri
+    uri_override: uri_override
+    hide_children_in_tree: hide_children_in_tree
+    show_in_tree: show_in_tree
+    properties: properties
+
+# If you want to add additional columns to your XLS export, you may hard-code
+# values here in the format {XLS-Column-Name} : {Hard-coded-value}.
+Hardcoded-Values:

@@ -23,7 +23,7 @@ class ImportCommand extends Command
             ->setName('import')
             ->setDescription('Parse the indicated .xls or .xlsx file and import it into MODX as page resources')
             ->addArgument('source', InputArgument::REQUIRED, 'Path to Excel file.')
-            ->addArgument('mapfile', InputArgument::OPTIONAL, 'Yaml file containing column mappings (generated via the map command)')
+            ->addArgument('mapfile', InputArgument::OPTIONAL, 'Yaml file containing column mappings (generated via the map:import command)')
 //            ->addOption(
 //                'skip_rows',
 //                's',
