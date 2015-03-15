@@ -94,9 +94,12 @@ class ExportCommand extends Command
         $map = $yaml->parse(file_get_contents($mapfile));
 
 
-        $headers = $map['modx2xls']; //, array_keys($map['Hardcoded-Values']));
+        $headers = $map['modx2xls']; //, array_keys($map['Hardcoded-
+        $hard_coded = array();
+
         if ($map['Hardcoded-Values'])
         {
+            $hard_coded = $map['Hardcoded-Values'];
             $headers = array_merge($headers, $map['Hardcoded-Values']);
         }
 
@@ -140,7 +143,11 @@ class ExportCommand extends Command
         {
             foreach($headers as $field => $col)
             {
-                if (isset($this->resource_cols[$field]))
+                if (isset($hard_coded[$field]))
+                {
+                    $v = $hard_coded[$field];
+                }
+                elseif (isset($this->resource_cols[$field]))
                 {
                     $v = $P->get($field);
                 }

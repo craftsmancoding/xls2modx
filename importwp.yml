@@ -1,0 +1,48 @@
+# ------ POST TYPES -----------------------------------------------------------------------------------
+# Mappings use a colon followed by a space (: ) to mark each key/value pair
+# Format is {wordpress-post-type}: {MODX-class_key}
+# By default, modDocument is assumed.
+post_types:
+    post: modDocument
+    page: modDocument
+
+# ------ DEFAULT TEMPLATES ----------------------------------------------------------------------------
+# WordPress use of custom post-types is more common than custom MODX resource classes (CRCs).
+# Instead, MODX often uses specific templates to represent specific types of content.
+# Here you can map the WordPress post-type to a MODX template id.  If no default template is defined
+# for a post-type, the MODX default template will be assumed.
+# Format is {wp-post-type}: {modx-template-id}
+default_templates:
+    post: 1
+    page: 1
+
+# ------ TEMPLATES ------------------------------------------------------------------------------------
+# WordPress pages (not posts) can use specific templates.  WordPress specifies files as custom templates.
+# If you want to map these template files to specific MODX templates, enter the MODX template ids here.
+# If no mappings are provided, the default templates defined above will be used.
+# Format is {wp-template-file.php}: {modx-template-id}
+templates:
+    page-custom.php: 1
+
+# ------ AUTHORS --------------------------------------------------------------------------------------
+# You can preserve authorship credits by migrating users. If you list a username that does not exist in
+# MODX, a 'stub' user will be created: the record will exist, but the user will not be able to log in.
+# If pages are attributed to an author that is not imported, the MODX Default Admin user will be assumed.
+# Format is {wp-username}: {modx-username}
+authors:
+    admin: admin
+
+# ------ FIELDS- --------------------------------------------------------------------------------------
+# This section controls how WordPress fields are translated into MODX fields.  A sample is generated for
+# you, but you may wish to review the custom fields --> Template Variables.
+# Format is {wp-fieldname}: {modx-fieldname}
+fields:
+    post_title: pagetitle
+    post_content: content
+    post_excerpt: introtext
+    post_date_gmt: createdon
+    post_name: alias
+    post_parent: parent
+    menu_order: menuindex
+    custom_field1: custom_field1
+    custom_field2: custom_field2

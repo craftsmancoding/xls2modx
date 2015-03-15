@@ -18,6 +18,7 @@ use Xls2modx\Console\Command\ImportCommand;
 use Xls2modx\Console\Command\ExportCommand;
 use Xls2modx\Console\Command\MapExportCommand;
 use Xls2modx\Console\Command\MapImportCommand;
+use Xls2modx\Console\Command\MapImportWpCommand;
 
 
 use Symfony\Component\Console\Application;
@@ -27,6 +28,7 @@ $application = new Application('xls2modx', '1.0');
 $application->add(new ImportCommand());
 $application->add(new ExportCommand());
 $application->add(new MapImportCommand());
+$application->add(new MapImportWpCommand());
 $application->add(new MapExportCommand());
 $application->run();
 
