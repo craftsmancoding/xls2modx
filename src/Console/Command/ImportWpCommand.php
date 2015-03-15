@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Parser;
 
-class ImportCommand extends Command
+class ImportWpCommand extends Command
 {
     public $modx;
     public $resource_cols;
@@ -20,10 +20,10 @@ class ImportCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('import')
-            ->setDescription('Parse the indicated .xls or .xlsx file and import it into MODX as page resources')
-            ->addArgument('source', InputArgument::REQUIRED, 'Path to Excel file.')
-            ->addArgument('mapfile', InputArgument::OPTIONAL, 'Yaml file containing column mappings (generated via the map:import command)')
+            ->setName('import:wp')
+            ->setDescription('Parse a WordPress XML export and import it into MODX as page resources, users, assets, and taxonomies')
+            ->addArgument('source', InputArgument::REQUIRED, 'Path to XML file.')
+            ->addArgument('mapfile', InputArgument::OPTIONAL, 'Yaml file containing column mappings (generated via the map:importwp command)')
 //            ->addOption(
 //                'skip_rows',
 //                's',
@@ -49,13 +49,15 @@ class ImportCommand extends Command
         {
             $output->writeln('<error>File does not exist: '. $source.'</error>');
             exit;
-            //throw new \Exception('File does not exist: '. $source);
         }
         $map = array(
-            'xls2modx'=>array(),
-            'TVs'=>array(),
-            'Config'=>array(),
-            'Hardcoded-Values'=>array()
+            'post_types'=>array(),
+            'default_templates'=>array(),
+            'templates'=>array(),
+            'authors'=>array(),
+            'fields'=>array(),
+            // TODO: shortcodes --> Snippets
+            // TODO: Hardcoded-Values
         );
         if ($mapfile)
         {
@@ -63,7 +65,6 @@ class ImportCommand extends Command
             {
                 $output->writeln('<error>File does not exist: '. $mapfile.'</error>');
                 exit;
-                //throw new \Exception('File does not exist: '. $source);
             }
 
             $yaml = new Parser();
@@ -75,47 +76,21 @@ class ImportCommand extends Command
             $output->writeln('Importing file '.$source. ' with no mappings.');
         }
 
-//print_r($map); exit;
-        // Create any TVs?
-        if (isset($map['TVs']))
-        {
-            $this->createTVs($map['TVs'], $output);
-        }
+        // Import/Create any taxonomies/terms
+        // Check mapped authors: create any users if necessary (LOG THEM!)
+        // Check mapped fields : create any TVs if necessary (LOG THEM!)
 
-        // Verify mappings
-        $this->verifyMappings($map, $output);
+        // Iterate over posts
+        // build lookup table for URLs
+        // check for custom fields containing multiple rows of data
+        // add any page/term associations
+        // Import assets
 
-        // Map TV names to IDs
-        $this->mapTvNames2id();
+        // Replace hard-coded URLs with [[~123]] according to the lookup table
+        // Replace [shortcodes] with Snippets
+        // Replace any links to assets
 
-        $objPHPExcel = \PHPExcel_IOFactory::load($source);
 
-        $objWorksheet = $objPHPExcel->getActiveSheet();
-
-        $headers = array();
-        foreach ($objWorksheet->getRowIterator() as $row) {
-            $cellIterator = $row->getCellIterator();
-            $cellIterator->setIterateOnlyExistingCells(false);
-
-            if ($row->getRowIndex() <= 1)
-            {
-                // Get Headers
-                foreach ($cellIterator as $cell) {
-                    $headers[] = $cell->getValue();
-                }
-                continue;
-            }
-
-            $vals = array();
-            foreach ($cellIterator as $cell) {
-                $vals[] = $cell->getValue();
-            }
-            // We gotta have something in the first column
-            if (empty($vals[0])) {
-                continue;
-            }
-            $this->createModxResource($vals,$headers,$map, $output);
-        }
     }
 
     public function createModxResource($vals,$headers,$fullmap, $output)
