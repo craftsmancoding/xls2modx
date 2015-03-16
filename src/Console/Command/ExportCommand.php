@@ -162,7 +162,7 @@ class ExportCommand extends Command
         $row = 2;
         foreach ($Pages as $P)
         {
-            $output->writeln( ($row - 1).'. '.$P->get('pagetitle').' ('.$P->get('id').')' );
+            $output->writeln( ($offset+1).'. '.$P->get('pagetitle').' ('.$P->get('id').')' );
             foreach($headers as $field => $col)
             {
                 if (isset($hard_coded[$field]))
@@ -180,6 +180,7 @@ class ExportCommand extends Command
 
                 $W->setCellValue($col.$row, $v);
             }
+            $offset++;
             $row++;
         }
 
