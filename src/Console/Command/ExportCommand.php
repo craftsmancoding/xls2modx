@@ -103,7 +103,7 @@ class ExportCommand extends Command
             $headers = array_merge($headers, $map['Hardcoded-Values']);
         }
 
-        $where = json_encode($where);
+        $where = json_decode($where,true);
         // TODO: verify mappings
 
         $objPHPExcel = new \PHPExcel();
