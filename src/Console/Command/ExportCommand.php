@@ -61,7 +61,7 @@ class ExportCommand extends Command
         $mapfile = $input->getArgument('mapfile');
         $where = $input->getOption('where');
         $overwrite = $input->getOption('overwrite');
-
+//print $where; exit;
         if (file_exists($target) && !$overwrite)
         {
             $output->writeln('<error>Destination file exists: '.$target.'</error>');
@@ -105,6 +105,7 @@ class ExportCommand extends Command
 
         $where = json_decode($where,true);
         // TODO: verify mappings
+//print_r($where); exit;
 
         $objPHPExcel = new \PHPExcel();
         $objPHPExcel->getProperties()
