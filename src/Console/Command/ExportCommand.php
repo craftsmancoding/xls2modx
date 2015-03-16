@@ -66,7 +66,6 @@ class ExportCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        //print 'hi'; exit;
         $this->modx = get_modx();
         $this->modx->initialize('mgr');
         $this->resource_cols = $this->modx->getFields('modResource');
@@ -75,7 +74,9 @@ class ExportCommand extends Command
         $mapfile = $input->getArgument('mapfile');
         $where = $input->getOption('where');
         $overwrite = $input->getOption('overwrite');
-//print $where; exit;
+        $limit = $input->getOption('limit');
+        $offset = $input->getOption('offset');
+
         if (file_exists($target) && !$overwrite)
         {
             $output->writeln('<error>Destination file exists: '.$target.'</error>');
