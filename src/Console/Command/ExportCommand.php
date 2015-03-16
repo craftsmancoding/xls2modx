@@ -135,12 +135,13 @@ class ExportCommand extends Command
             $output->writeln('<error>No pages matched your filters. (--where)</error>');
             exit;
         }
-        $output->writeln('Beginning export of '.$cnt.' pages...');
+        $output->writeln('Beginning export of '.$cnt.' pages @ '.date('Y-m-d H:is'));
 
         $Pages = $this->modx->getIterator('modResource', $where);
         $row = 2;
         foreach ($Pages as $P)
         {
+            $output->writeln( $P->get('pagetitle').' ('.$P->get('id').')' );
             foreach($headers as $field => $col)
             {
                 if (isset($hard_coded[$field]))
@@ -165,7 +166,7 @@ class ExportCommand extends Command
         $objWriter->setPreCalculateFormulas(false);
         $objWriter->save($target);
 
-
+        $output->writeln('Export complete @ '.date('Y-m-d H:i:s'));
         $output->writeln("Peak memory usage: " . (memory_get_peak_usage(true) / 1024 / 1024) . " MB");
     }
 

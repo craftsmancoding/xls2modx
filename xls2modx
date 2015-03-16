@@ -12,6 +12,8 @@
  * php xls2modx help [function-name]
  *
  */
+ini_set('max_execution_time', 0);
+
 require_once dirname(__FILE__).'/vendor/autoload.php';
 
 use Xls2modx\Console\Command\ImportCommand;
