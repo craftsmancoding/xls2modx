@@ -150,7 +150,7 @@ class ExportCommand extends Command
         }
 
         // Write Rows
-        $cnt = $this->modx->getCount('modResource', $query);
+        $cnt = $this->modx->getCount('modResource', $where);
         if (!$cnt)
         {
             $output->writeln('<error>No pages matched your filters. (--where)</error>');
