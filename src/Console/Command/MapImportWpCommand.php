@@ -55,15 +55,12 @@ class MapImportWpCommand extends Command
 
         $WP = new \Xls2modx\Parser\WordPressXml();
         $data = $WP->parse($source);
-//        print_r($out);
-//exit;
-
-
 
         $post_types = array();
         $default_templates = array();
         $templates = array();
         $authors = array();
+        $shortcodes = array();
         $fields = array(
             'post_title' => 'pagetitle',
             'post_content' => 'content',
@@ -84,6 +81,16 @@ class MapImportWpCommand extends Command
                 $default_templates[ $p['post_type'] ] = (int) $this->modx->getOption('default_template');
             }
 
+
+            preg_match_all('/\[\w+.*\]/Ui', $p['post_content'], $matches);
+            if (!empty($matches[0]))
+            {
+                //print_r($matches); exit;
+                foreach ($matches[0] as $m)
+                {
+                    $shortcodes[ $m ] = '';
+                }
+            }
 
             $authors[ $p['post_author'] ] = $p['post_author'];
 
@@ -110,7 +117,7 @@ class MapImportWpCommand extends Command
 
         $out  = "# ------ POST TYPES -----------------------------------------------------------------------------------\n";
         $out .= "# Mappings use a colon followed by a space (: ) to mark each key/value pair\n";
-        $out .= "# Format is {wordpress-post-type}: {MODX-class_key}\n";
+        $out .= "# Format is wordpress-post-type: MODX-class_key\n";
         $out .= "# By default, modDocument is assumed.\n";
         $out .= $dumper->dump(array('post_types'=> $post_types), 2);
         $out .= "\n";
@@ -119,27 +126,34 @@ class MapImportWpCommand extends Command
         $out .= "# Instead, MODX often uses specific templates to represent specific types of content.\n";
         $out .= "# Here you can map the WordPress post-type to a MODX template id.  If no default template is defined\n";
         $out .= "# for a post-type, the MODX default template will be assumed.\n";
-        $out .= "# Format is {wp-post-type}: {modx-template-id}\n";
+        $out .= "# Format is wp-post-type: modx-template-id\n";
         $out .= $dumper->dump(array('default_templates'=> $default_templates), 2);
         $out .= "\n";
         $out .= "# ------ TEMPLATES ------------------------------------------------------------------------------------\n";
         $out .= "# WordPress pages (not posts) can use specific templates.  WordPress specifies files as custom templates.\n";
         $out .= "# If you want to map these template files to specific MODX templates, enter the MODX template ids here.\n";
         $out .= "# If no mappings are provided, the default templates defined above will be used.\n";
-        $out .= "# Format is {wp-template-file.php}: {modx-template-id}\n";
+        $out .= "# Format is wp-template-file.php: modx-template-id\n";
         $out .= $dumper->dump(array('templates' => $templates), 2);
         $out .= "\n";
         $out .= "# ------ AUTHORS --------------------------------------------------------------------------------------\n";
         $out .= "# You can preserve authorship credits by migrating users. If you list a username that does not exist in\n";
         $out .= "# MODX, a 'stub' user will be created: the record will exist, but the user will not be able to log in.\n";
         $out .= "# If pages are attributed to an author that is not imported, the MODX Default Admin user will be assumed.\n";
-        $out .= "# Format is {wp-username}: {modx-username}\n";
+        $out .= "# Format is wp-username: modx-username\n";
         $out .= $dumper->dump(array('authors' => $authors), 2);
         $out .= "\n";
-        $out .= "# ------ FIELDS- --------------------------------------------------------------------------------------\n";
+        $out .= "# ------ SHORTCODES -----------------------------------------------------------------------------------\n";
+        $out .= "# Content in WordPress may contain [shorcodes] which are analogous to MODX Snippets.  You should define\n";
+        $out .= "# a MODX Snippet which should replace each shortcode instance.  Keep in mind that adapting code in the\n";
+        $out .= "# shortcodes may not be trivial!  The actual calls are listed here.\n";
+        $out .= "# Format is [wp_shortcode instance=\"x\"]: [[modxSnippet? &instance=`x`]]\n";
+        $out .= "\n";
+        $out .= $dumper->dump(array('shortcodes' => $shortcodes), 2);
+        $out .= "# ------ FIELDS ---------------------------------------------------------------------------------------\n";
         $out .= "# This section controls how WordPress fields are translated into MODX fields.  A sample is generated for\n";
         $out .= "# you, but you may wish to review the custom fields --> Template Variables.\n";
-        $out .= "# Format is {wp-fieldname}: {modx-fieldname}\n";
+        $out .= "# Format is wp-fieldname: modx-fieldname\n";
         $out .= $dumper->dump(array('fields' => $fields), 2);
 
         file_put_contents($destination, $out);
@@ -155,7 +169,6 @@ class MapImportWpCommand extends Command
             $mol[$mvalues[$i]['tag']] = $mvalues[$i]['value'];
         }
         return $mol;
-        //return new AminoAcid($mol);
     }
 }
 /*EOF*/

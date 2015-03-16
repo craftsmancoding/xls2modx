@@ -32,7 +32,14 @@ templates:
 authors:
     admin: admin
 
-# ------ FIELDS- --------------------------------------------------------------------------------------
+# ------ SHORTCODES -----------------------------------------------------------------------------------
+# Content in WordPress may contain [shorcodes] which are analogous to MODX Snippets.  You should define
+# a MODX Snippet which should replace each shortcode instance.  Keep in mind that adapting code in the
+# shortcodes may not be trivial!  The actual calls are listed here.
+# Format is {[wp_shortcode instance="x"}}: {[[modxSnippet? &instance=`x`]]}
+shortcodes:
+    '[my_shortcode x="something"]': ''
+# ------ FIELDS ---------------------------------------------------------------------------------------
 # This section controls how WordPress fields are translated into MODX fields.  A sample is generated for
 # you, but you may wish to review the custom fields --> Template Variables.
 # Format is {wp-fieldname}: {modx-fieldname}

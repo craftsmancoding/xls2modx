@@ -1,5 +1,5 @@
 <?php
-
+use Symfony\Component\Yaml\Parser;
 class MapImportWpTest extends PHPUnit_Framework_TestCase {
 
     public static $modx;
@@ -37,11 +37,12 @@ class MapImportWpTest extends PHPUnit_Framework_TestCase {
 
     public function testImport()
     {
-        $xml = simplexml_load_file(dirname(__FILE__).'/sourcefiles/testsite.wordpress.xml');
+        $str = file_get_contents(dirname(__FILE__).'/sourcefiles/content.txt');
+        preg_match_all('/\[\w+.*\]/Ui', $str, $matches);
+        print_r($matches);
 
-        print_r($xml); exit;
-        foreach ($xml->element as $el) {
-            echo $el->name ."\n";
-        }
+//        $yaml = new Parser();
+//        $map = $yaml->parse(file_get_contents(dirname(__FILE__).'/sourcefiles/import.yml'));
+//        print_r($map);
     }
 }

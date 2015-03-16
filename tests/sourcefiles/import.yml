@@ -1,0 +1,2 @@
+test:
+    '[donkey x="Xray"]': '[[donkey? x=`Xray`]]'
