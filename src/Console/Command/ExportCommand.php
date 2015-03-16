@@ -32,6 +32,20 @@ class ExportCommand extends Command
                 '{}'
             )
             ->addOption(
+                'limit',
+                'l',
+                InputOption::VALUE_REQUIRED,
+                "Limit rows returned",
+                false
+            )
+            ->addOption(
+                'offset',
+                '',
+                InputOption::VALUE_REQUIRED,
+                "Offset rows returned (use with --limit)",
+                0
+            )
+            ->addOption(
                 'overwrite',
                 'o',
                 InputOption::VALUE_NONE,
@@ -105,7 +119,12 @@ class ExportCommand extends Command
 
         $where = json_decode($where,true);
         // TODO: verify mappings
-//print_r($where); exit;
+        $query = $this->modx->newQuery('modResource');
+        $query->where($where);
+        if ($limit)
+        {
+            $query->limit($limit, $offset);
+        }
 
         $objPHPExcel = new \PHPExcel();
         $objPHPExcel->getProperties()
@@ -130,7 +149,7 @@ class ExportCommand extends Command
         }
 
         // Write Rows
-        $cnt = $this->modx->getCount('modResource', $where);
+        $cnt = $this->modx->getCount('modResource', $query);
         if (!$cnt)
         {
             $output->writeln('<error>No pages matched your filters. (--where)</error>');
@@ -138,7 +157,7 @@ class ExportCommand extends Command
         }
         $output->writeln('Beginning export of '.$cnt.' pages @ '.date('Y-m-d H:is'));
 
-        $Pages = $this->modx->getIterator('modResource', $where);
+        $Pages = $this->modx->getIterator('modResource', $query);
         $row = 2;
         foreach ($Pages as $P)
         {
