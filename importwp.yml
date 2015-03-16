@@ -39,6 +39,7 @@ authors:
 # Format is {[wp_shortcode instance="x"}}: {[[modxSnippet? &instance=`x`]]}
 shortcodes:
     '[my_shortcode x="something"]': ''
+
 # ------ FIELDS ---------------------------------------------------------------------------------------
 # This section controls how WordPress fields are translated into MODX fields.  A sample is generated for
 # you, but you may wish to review the custom fields --> Template Variables.

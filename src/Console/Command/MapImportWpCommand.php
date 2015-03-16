@@ -62,7 +62,7 @@ class MapImportWpCommand extends Command
         $authors = array();
         $shortcodes = array();
         $fields = array(
-            'post_title' => 'pagetitle',
+            'post_title' => ['pagetitle','description'],
             'post_content' => 'content',
             'post_excerpt' => 'introtext',
             'post_date_gmt' => 'createdon',

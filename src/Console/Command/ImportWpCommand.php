@@ -14,8 +14,16 @@ use Symfony\Component\Yaml\Parser;
 class ImportWpCommand extends Command
 {
     public $modx;
-    public $resource_cols;
-    public $tvname_to_id = array();
+
+    public $data;
+    public $valid_mappings = array(
+        'post_types',
+        'default_templates',
+        'templates',
+        'authors',
+        'shortcodes',
+        'fields'
+    );
 
     protected function configure()
     {
@@ -56,29 +64,32 @@ class ImportWpCommand extends Command
             'templates'=>array(),
             'authors'=>array(),
             'fields'=>array(),
-            // TODO: shortcodes --> Snippets
+            'shortcodes' => array(), //  --> Snippets
             // TODO: Hardcoded-Values
         );
-        if ($mapfile)
-        {
-            if (!file_exists($mapfile))
-            {
-                $output->writeln('<error>File does not exist: '. $mapfile.'</error>');
-                exit;
-            }
 
-            $yaml = new Parser();
-            $map = $yaml->parse(file_get_contents($mapfile));
-            $output->writeln('Importing file '.$source. ' using mappings contained in '.$mapfile);
-        }
-        else
+        if (!file_exists($mapfile))
         {
-            $output->writeln('Importing file '.$source. ' with no mappings.');
+            $output->writeln('<error>File does not exist: '. $mapfile.'</error>');
+            exit;
         }
 
-        // Import/Create any taxonomies/terms
+        $yaml = new Parser();
+        $map = $yaml->parse(file_get_contents($mapfile));
+        $output->writeln('Importing file '.$source. ' using mappings contained in '.$mapfile);
+
+
+
+        $WP = new \Xls2modx\Parser\WordPressXml();
+        $this->data = $WP->parse($source);
+
+        // Verify mappings
+        $this->verifyMappings($map, $output);
+        $this->verifyXML($output);
+
         // Check mapped authors: create any users if necessary (LOG THEM!)
         // Check mapped fields : create any TVs if necessary (LOG THEM!)
+        // Import/Create any taxonomies/terms
 
         // Iterate over posts
         // build lookup table for URLs
@@ -235,71 +246,16 @@ class ImportWpCommand extends Command
 
     public function verifyMappings($map, $output)
     {
-        if (empty($map))
-        {
-            return;
-        }
-        $valid_cols = $this->resource_cols;
-        //print_r($valid_cols); exit;
-        $mapped_cols = array();
 
-        if ($TVs = $this->modx->getCollection('modTemplateVar'))
-        {
-            foreach ($TVs as $t)
-            {
-                $valid_cols[ $t->get('name') ] = true;
-            }
-        }
-
-        if (isset($map['xls2modx']))
+        if (isset($map['']))
         {
 
-            foreach($map['xls2modx'] as $xls => $modx)
-            {
-                if (empty($modx)) continue; // unmapped.
-                if (is_array($modx))
-                {
-
-                    foreach($modx as $m)
-                    {
-                        if (!array_key_exists(trim($m),$valid_cols))
-                        {
-                            $output->writeln('<error>Invalid Column: '.$m.'! Mapped columns must be valid columns from modx_site_content or they must be defined as TVs.</error>');
-                            exit;
-                        }
-                        $mapped_cols[] = trim($m);
-                    }
-                }
-                else
-                {
-                    if (!array_key_exists(trim($modx),$valid_cols))
-                    {
-                        $output->writeln('<error>Invalid Column: '.$modx.'! Mapped columns must be valid columns from modx_site_content or they must be defined as TVs.</error>');
-                        exit;
-                    }
-                    $mapped_cols[] = trim($modx);
-                }
-            }
         }
+    }
 
-        if (isset($map['Config']))
-        {
-            if (isset($map['Config']['identifier']))
-            {
-                if (is_array($map['Config']['identifier']))
-                {
-                    // TODO: compound keys
-                }
-                if(!in_array($map['Config']['identifier'], $mapped_cols))
-                {
-                    $output->writeln('<error>Unmapped Column: '.$map['Config']['identifier'].'! Your identifying column must be mapped, otherwise we cannot check for duplicates.</error>');
-                    exit;
-                }
-            }
-        }
+    public function verifyXML($output)
+    {
 
-        $output->writeln('<fg=green>Mappings valid!</fg=green>');
-        $output->writeln('Mapped columns: '.print_r($mapped_cols,true));
     }
 
     public function mapTvNames2id()
