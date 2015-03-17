@@ -17,6 +17,7 @@ ini_set('max_execution_time', 0);
 require_once dirname(__FILE__).'/vendor/autoload.php';
 
 use Xls2modx\Console\Command\ImportCommand;
+use Xls2modx\Console\Command\ImportWpCommand;
 use Xls2modx\Console\Command\ExportCommand;
 use Xls2modx\Console\Command\MapExportCommand;
 use Xls2modx\Console\Command\MapImportCommand;
@@ -28,6 +29,7 @@ use Symfony\Component\Console\Application;
 $application = new Application('xls2modx', '1.0');
 
 $application->add(new ImportCommand());
+$application->add(new ImportWpCommand());
 $application->add(new ExportCommand());
 $application->add(new MapImportCommand());
 $application->add(new MapImportWpCommand());

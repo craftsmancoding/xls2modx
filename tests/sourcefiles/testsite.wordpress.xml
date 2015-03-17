@@ -16,7 +16,7 @@
 <!-- 7. WordPress will then import each of the posts, pages, comments, categories, etc. -->
 <!--    contained in this file into your site. -->
 
-<!-- generator="WordPress/4.1.1" created="2015-03-16 02:50" -->
+<!-- generator="WordPress/4.1.1" created="2015-03-17 05:44" -->
 <rss version="2.0"
      xmlns:excerpt="http://wordpress.org/export/1.2/excerpt/"
      xmlns:content="http://purl.org/rss/1.0/modules/content/"
@@ -29,7 +29,7 @@
         <title>Test Site</title>
         <link>http://wp.app:8000</link>
         <description>Just another WordPress site</description>
-        <pubDate>Mon, 16 Mar 2015 02:50:57 +0000</pubDate>
+        <pubDate>Tue, 17 Mar 2015 05:44:13 +0000</pubDate>
         <language>en-US</language>
         <wp:wxr_version>1.2</wp:wxr_version>
         <wp:base_site_url>http://wp.app:8000</wp:base_site_url>
@@ -38,7 +38,12 @@
         <wp:author><wp:author_id>1</wp:author_id><wp:author_login>admin</wp:author_login><wp:author_email>everett@fireproofsocks.com</wp:author_email><wp:author_display_name><![CDATA[admin]]></wp:author_display_name><wp:author_first_name><![CDATA[]]></wp:author_first_name><wp:author_last_name><![CDATA[]]></wp:author_last_name></wp:author>
 
         <wp:category><wp:term_id>2</wp:term_id><wp:category_nicename>dork</wp:category_nicename><wp:category_parent></wp:category_parent><wp:cat_name><![CDATA[Dork]]></wp:cat_name></wp:category>
+        <wp:category><wp:term_id>7</wp:term_id><wp:category_nicename>sub-nerd</wp:category_nicename><wp:category_parent>dork</wp:category_parent><wp:cat_name><![CDATA[sub-Nerd]]></wp:cat_name></wp:category>
         <wp:category><wp:term_id>1</wp:term_id><wp:category_nicename>uncategorized</wp:category_nicename><wp:category_parent></wp:category_parent><wp:cat_name><![CDATA[Uncategorized]]></wp:cat_name></wp:category>
+        <wp:tag><wp:term_id>5</wp:term_id><wp:tag_slug>random</wp:tag_slug><wp:tag_name><![CDATA[random]]></wp:tag_name></wp:tag>
+        <wp:tag><wp:term_id>3</wp:term_id><wp:tag_slug>some</wp:tag_slug><wp:tag_name><![CDATA[Some]]></wp:tag_name></wp:tag>
+        <wp:tag><wp:term_id>4</wp:term_id><wp:tag_slug>tag1</wp:tag_slug><wp:tag_name><![CDATA[tag1]]></wp:tag_name></wp:tag>
+        <wp:tag><wp:term_id>6</wp:term_id><wp:tag_slug>unused-tag</wp:tag_slug><wp:tag_name><![CDATA[Unused Tag]]></wp:tag_name></wp:tag>
 
         <generator>http://wordpress.org/?v=4.1.1</generator>
 
@@ -63,7 +68,24 @@
             <wp:post_type>post</wp:post_type>
             <wp:post_password></wp:post_password>
             <wp:is_sticky>0</wp:is_sticky>
+            <category domain="post_tag" nicename="random"><![CDATA[random]]></category>
             <category domain="category" nicename="uncategorized"><![CDATA[Uncategorized]]></category>
+            <wp:postmeta>
+                <wp:meta_key>_edit_last</wp:meta_key>
+                <wp:meta_value><![CDATA[1]]></wp:meta_value>
+            </wp:postmeta>
+            <wp:postmeta>
+                <wp:meta_key>_encloseme</wp:meta_key>
+                <wp:meta_value><![CDATA[1]]></wp:meta_value>
+            </wp:postmeta>
+            <wp:postmeta>
+                <wp:meta_key>_encloseme</wp:meta_key>
+                <wp:meta_value><![CDATA[1]]></wp:meta_value>
+            </wp:postmeta>
+            <wp:postmeta>
+                <wp:meta_key>_encloseme</wp:meta_key>
+                <wp:meta_value><![CDATA[1]]></wp:meta_value>
+            </wp:postmeta>
             <wp:comment>
                 <wp:comment_id>1</wp:comment_id>
                 <wp:comment_author><![CDATA[Mr WordPress]]></wp:comment_author>
@@ -138,6 +160,9 @@ As a new WordPress user, you should go to <a href="http://wp.app:8000/wp-admin/"
             <wp:post_password></wp:post_password>
             <wp:is_sticky>0</wp:is_sticky>
             <category domain="category" nicename="dork"><![CDATA[Dork]]></category>
+            <category domain="post_tag" nicename="some"><![CDATA[Some]]></category>
+            <category domain="category" nicename="sub-nerd"><![CDATA[sub-Nerd]]></category>
+            <category domain="post_tag" nicename="tag1"><![CDATA[tag1]]></category>
             <wp:postmeta>
                 <wp:meta_key>_edit_last</wp:meta_key>
                 <wp:meta_value><![CDATA[1]]></wp:meta_value>
@@ -149,6 +174,14 @@ As a new WordPress user, you should go to <a href="http://wp.app:8000/wp-admin/"
             <wp:postmeta>
                 <wp:meta_key>custom_field2</wp:meta_key>
                 <wp:meta_value><![CDATA[other value]]></wp:meta_value>
+            </wp:postmeta>
+            <wp:postmeta>
+                <wp:meta_key>_encloseme</wp:meta_key>
+                <wp:meta_value><![CDATA[1]]></wp:meta_value>
+            </wp:postmeta>
+            <wp:postmeta>
+                <wp:meta_key>_encloseme</wp:meta_key>
+                <wp:meta_value><![CDATA[1]]></wp:meta_value>
             </wp:postmeta>
             <wp:postmeta>
                 <wp:meta_key>_encloseme</wp:meta_key>
