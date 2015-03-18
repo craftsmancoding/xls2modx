@@ -34,7 +34,9 @@ class ImportWpCommand extends Command
     public $tag_lookup = array();
     public $auth_lookup = array();
     public $url_lookup = array();
-    public $wp_modx_ids_lookup = array();
+    public $wp_modx_ids_lookup = array(); // this also gives us a record of all MODX page ids created/updated
+
+    public $tvs;
 
     protected function configure()
     {
@@ -60,8 +62,13 @@ class ImportWpCommand extends Command
         $this->modx = get_modx();
         $this->modx->initialize('mgr');
 
-        // TODO: test whether assetmanager and taxonomies are installed
 
+        $this->testPreReqs($output);
+        $core_path = $this->modx->getOption('taxonomies.core_path', null, MODX_CORE_PATH.'components/taxonomies/');
+        include_once $core_path .'vendor/autoload.php';
+
+        // Have you moved the WordPress assets into the directory?
+        // yes/no
         $this->resource_cols = $this->modx->getFields('modResource');
 
         $source = $input->getArgument('source');
@@ -72,7 +79,8 @@ class ImportWpCommand extends Command
             $output->writeln('<error>File does not exist: '. $source.'</error>');
             exit;
         }
-        $map = array(
+
+        $this->map = array(
             'post_types'=>array(),
             'default_templates'=>array(),
             'templates'=>array(),
@@ -93,7 +101,6 @@ class ImportWpCommand extends Command
         $output->writeln('Importing file '.$source. ' using mappings contained in '.$mapfile);
 
 
-
         $WP = new \Xls2modx\Parser\WordPressXml();
         $this->data = $WP->parse($source);
 //print_r($this->data); exit;
@@ -107,6 +114,7 @@ class ImportWpCommand extends Command
 
         // Iterate over posts
         $this->createContent($output);
+
         exit;
         // Check mapped fields : create any TVs if necessary (LOG THEM!)
         // check for custom fields containing multiple rows of data
@@ -118,6 +126,30 @@ class ImportWpCommand extends Command
         // Replace any links to assets
 
 
+    }
+
+    /**
+     * Make sure prereq's are installed
+     * @param $output
+     */
+    public function testPreReqs($output)
+    {
+        $failed = false;
+        if (!$S = $this->modx->getObject('modSystemSetting', array('key'=>'assman.class_keys')))
+        {
+            $output->writeln('<error>The Asset Manager Extra must be installed.</error>');
+            $failed = true;
+        }
+        if (!$S = $this->modx->getObject('modSystemSetting', array('key'=>'taxonomies.default_taxonomy_template')))
+        {
+            $output->writeln('<error>The Taxonomies Extra must be installed.</error>');
+            $failed = true;
+        }
+        // Lunchbox
+        if ($failed)
+        {
+            exit;
+        }
     }
 
     /**
@@ -177,8 +209,14 @@ class ImportWpCommand extends Command
                 $Term->set('published', true);
                 $Term->set('template', $this->modx->getOption('taxonomies.default_term_template', null, $this->modx->getOption('default_template')));
 
-                $Term->save();
-                $output->writeln('Creating category term: '.$c['cat_name']);
+                if (!$Term->save())
+                {
+                    $output->writeln('<error>Could not create category term: '.$c['cat_name'].'</error>');
+                }
+                else
+                {
+                    $output->writeln('Creating category term: '.$c['cat_name']);
+                }
 
             }
             else
@@ -322,6 +360,7 @@ class ImportWpCommand extends Command
             if ($p['post_type'] == 'attachment')
             {
                 // TODO: create asset!
+                $this->createAsset($p, $output);
                 continue;
             }
 
@@ -355,70 +394,211 @@ class ImportWpCommand extends Command
 
 
             // Content
-            $content = $p['post_content'];
+            $P->set('content', $this->massageContent($p['post_content'], $output));
 
-            // Shortcodes?
-            // Urls?
-            // nl2br
-            $P->set('content', $content);
 
 
             $P->save();
-            $output->writeln('Creating page: '.$P->get('pagetitle').' ('.$P->get('id').')');
+            $output->writeln('Creating/Updating page: '.$P->get('pagetitle').' ('.$P->get('id').')');
+
+            $this->addTVs($P, $p, $output);
+            $this->addPageTerms($P, $p, $output);
 
             $this->url_lookup[ $p['guid'] ] = $P->get('id');
             $this->wp_modx_ids_lookup[ $p['post_id'] ] = $P->get('id');
         }
+
 
     }
 
     /**
      * Using Asset Manager, create the asset record (must have moved stuff into place first?)
      */
-    public function createAsset()
+    public function createAsset($a, $output)
     {
+        //print_r($a); exit;
+        // Normalize
+        foreach ($a['postmeta'] as $m)
+        {
+            $a[ $m['key'] ] = $m['value'];
+        }
+
+        $stub = $a['_wp_attached_file'];
+
+        if (!$Asset = $this->modx->getObject('Asset', array('stub'=>$stub)))
+        {
+            $Asset = $this->modx->newObject('Asset');
+            $Asset->set('stub', $stub);
+        }
+
+
+
+        $meta = unserialize($a['_wp_attachment_metadata']);
+
+        // Find Content type
+//        Array
+//     * (
+//     *   [name] => example.pdf
+//    *   [type] => application/pdf
+//    *   [tmp_name] => /tmp/path/somewhere/phpkAYQwR
+//    *   [error] => 0
+//    *   [size] => 2109
+//    *)
+        $path = $this->modx->getOption('assets_path') . $this->modx->getOption('assman.library_path').$stub;
+        // Recalculate height and width so we can get the mime-type (and just in case WP was wrong)
+        $mediainfo = $Asset->getMediaInfo($path);
+        $height = ($mediainfo['height']) ? $mediainfo['height'] : $meta['height'];
+        $width = ($mediainfo['width']) ? $mediainfo['width'] : $meta['width'];
+        $mime = $mediainfo['mime'];
+        $CT = $Asset->getContentType(array('name'=>$meta['file'],'type'=>$mime,'tmp_name'=>$path));
+        $Asset->set('content_type_id', $CT->get('id'));
+        $Asset->set('width', $width);
+        $Asset->set('height', $height);
+        $Asset->set('meta', $meta['image_meta']);
+        $Asset->set('alt', $a['post_content']);
+        $Asset->set('sig', md5_file($path));
+        // $Asset->set('size', ???);  // OH NOES!
+        $Asset->set('user_id', $this->auth_lookup[ $a['post_author'] ]);
+
+        $Asset->save();
 
     }
 
     /**
-     * Handle shortcodes, urls, nl2br
+     * Handle shortcodes, nl2br
      */
-    public function massageContent()
+    public function massageContent($content, $output)
     {
-
+        foreach($this->map['shortcodes'] as $shortcode => $snippet)
+        {
+            // What about [shortcode] long stuff in here...[/shortcode] ?? // TODO
+            $content = str_replace($shortcode,$snippet, $content);
+        }
+        $content = nl2br($content);
     }
 
     /**
      * Associate a page with any terms
+     * [terms] => Array
+    (
+    [0] => Array
+    (
+    [name] => random
+    [slug] => random
+    [domain] => post_tag
+    )
+
+    [1] => Array
+    (
+    [name] => Uncategorized
+    [slug] => uncategorized
+    [domain] => category
+    )
+
+    )
      */
-    public function addPageTerms()
+    public function addPageTerms($Page, $data, $output)
     {
-
-    }
-
-    public function createTVs($list,$output)
-    {
-        foreach ($list as $l)
+        if (!$data['terms'])
         {
-            if ($TV = $this->modx->getObject('modTemplateVar', array('name'=>$l)))
+            return;
+        }
+        $termids = array();
+        foreach ($data['terms'] as $t)
+        {
+            if (isset($this->tag_lookup[$t['slug']]))
             {
-                $output->writeln('TV '.$l.' already exists. Skipping...');
-                continue;
+                $termids[] = $this->tag_lookup[$t['slug']];
             }
-
-            $TV = $this->modx->newObject('modTemplateVar');
-            $TV->set('name', $l);
-
-            if (!$TV->save())
+            elseif (isset($this->cat_lookup[$t['slug']]))
             {
-                $output->writeln('<error>There was a problem creating TV '.$l.'</error>');
+                $termids[] = $this->cat_lookup[$t['slug']];
             }
-            else
-            {
-                $output->writeln('<info>TV '.$l.' created.</info>');
+            else {
+                $output->writeln('<error>Unknown taxonomical term: '.$t['slug'].'</error>');
             }
         }
+
+        if ($termids)
+        {
+            $T = new \Taxonomies\Base($this->modx);
+            $T->dictatePageTerms($Page->get('id'), $termids);
+            $output->writeln('Added terms to page '. $Page->get('id').': '. implode(',',$termids));
+        }
     }
+
+    public function addTVs($Page, $data, $output)
+    {
+        //print_r($data); exit;
+        if (empty($data['postmeta']))
+        {
+            return;
+        }
+        $fields = array();
+        foreach ($data['postmeta'] as $m)
+        {
+            if ($m['key'][0] == '_')
+            {
+                continue; // todo... keep custom fields with the underscore prefix
+            }
+            $fields[ $m['key'] ][] = $m['value'];
+        }
+
+        // If a page at any time stores more than one value for a field, it should trigger the TV to be a listbox-multiple
+        foreach ($fields as $name => $value)
+        {
+            if (count($value) == 1)
+            {
+                // Is JSON encoded?
+                // TODO: read the cctm.json file
+                $decode = json_decode($value[0]);
+                if (is_array($decode))
+                {
+                    $fields[$name] = $decode;
+                }
+            }
+            if (count($fields[$name]) > 1)
+            {
+                $this->tvs[$name]['type'] = 'listbox-multiple';
+                if (isset($this->tvs[$name]['values'])) {
+                    $this->tvs[$name]['values'] = array_unique(array_merge($this->tvs[$name]['values'], $values));
+                }
+                else
+                {
+                    $this->tvs[$name]['values'] = $values;
+                }
+            }
+        }
+
+        foreach ($fields as $name => $value)
+        {
+            if (!$tv = $this->modx->getObject('modTemplateVar',$name))
+            {
+                $output->writeln('Creating new TV: '.$name);
+                $tv = $this->modx->newObject('modTemplateVar');
+                $tv->set('name', $name);
+                $tv->set('caption', $name);
+                $tv->set('type', 'text'); // or listbox-multiple
+            }
+
+            if ($this->tvs[$name]['type'] == 'listbox-multiple')
+            {
+                $output->writeln('Multiple values detected. Setting TV to listbox-multiple: '.$name);
+                $tv->set('elements', implode('||', $this->tvs[$name]['values']));
+            }
+            $tv->save();
+            // Add to template
+            if (!$TVT = $this->modx->getObject('modTemplateVarTemplate', array('tmplvarid'=>$tv->get('id'),'templateid'=>$Page->get('template'))))
+            {
+                $TVT = $this->modx->newObject('modTemplateVarTemplate');
+                $TVT->set('tmplvarid', $tv->get('id'));
+                $TVT->set('templateid', $Page->get('template'));
+            }
+            $Page->setTVValue($name, $value);
+        }
+
+    }
+
 
     public function verifyMappings($map, $output)
     {

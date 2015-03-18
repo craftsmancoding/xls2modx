@@ -146,15 +146,22 @@ class MapImportWpCommand extends Command
         $out .= "# ------ SHORTCODES -----------------------------------------------------------------------------------\n";
         $out .= "# Content in WordPress may contain [shorcodes] which are analogous to MODX Snippets.  You should define\n";
         $out .= "# a MODX Snippet which should replace each shortcode instance.  Keep in mind that adapting code in the\n";
-        $out .= "# shortcodes may not be trivial!  The actual calls are listed here.\n";
+        $out .= "# shortcodes may not be trivial!  The shortcode calls are listed here.\n";
         $out .= "# Format is [wp_shortcode instance=\"x\"]: [[modxSnippet? &instance=`x`]]\n";
         $out .= "\n";
         $out .= $dumper->dump(array('shortcodes' => $shortcodes), 2);
-        $out .= "# ------ FIELDS ---------------------------------------------------------------------------------------\n";
-        $out .= "# This section controls how WordPress fields are translated into MODX fields.  A sample is generated for\n";
-        $out .= "# you, but you may wish to review the custom fields --> Template Variables.\n";
-        $out .= "# Format is wp-fieldname: modx-fieldname\n";
-        $out .= $dumper->dump(array('fields' => $fields), 2);
+        $out .= "# ------ SETTINGS -------------------------------------------------------------------------------------\n";
+        $out .= "# Some general settings here\n";
+        $out .= "\n";
+        $out .= "settings:\n";
+        $out .= "    # Should newlines in WP post content be converted to <br/> tags?\n";
+        $out .= "    nl2br: true";
+        // Not a good idea
+//        $out .= "# ------ FIELDS ---------------------------------------------------------------------------------------\n";
+//        $out .= "# This section controls how WordPress fields are translated into MODX fields.  A sample is generated for\n";
+//        $out .= "# you, but you may wish to review the custom fields --> Template Variables.\n";
+//        $out .= "# Format is wp-fieldname: modx-fieldname\n";
+//        $out .= $dumper->dump(array('fields' => $fields), 2);
 
         file_put_contents($destination, $out);
 
