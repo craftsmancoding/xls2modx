@@ -122,7 +122,7 @@ class MapImportWpCommand extends Command
         $out .= $dumper->dump(array('post_types'=> $post_types), 2);
         $out .= "\n";
         $out .= "# ------ DEFAULT TEMPLATES ----------------------------------------------------------------------------\n";
-        $out .= "# WordPress use of custom post-types is more common than custom MODX resource classes (CRCs).\n";
+        $out .= "# WordPress' use of custom post-types is more common than MODX's use of resource classes (CRCs).\n";
         $out .= "# Instead, MODX often uses specific templates to represent specific types of content.\n";
         $out .= "# Here you can map the WordPress post-type to a MODX template id.  If no default template is defined\n";
         $out .= "# for a post-type, the MODX default template will be assumed.\n";
@@ -146,7 +146,8 @@ class MapImportWpCommand extends Command
         $out .= "# ------ SHORTCODES -----------------------------------------------------------------------------------\n";
         $out .= "# Content in WordPress may contain [shorcodes] which are analogous to MODX Snippets.  You should define\n";
         $out .= "# a MODX Snippet which should replace each shortcode instance.  Keep in mind that adapting code in the\n";
-        $out .= "# shortcodes may not be trivial!  The shortcode calls are listed here.\n";
+        $out .= "# shortcodes may not be trivial!  The shortcode calls are listed below -- there may be many false-positives\n";
+        $out .= "# so please review them carefully to ensure that they are real shortcodes.\n";
         $out .= "# Format is [wp_shortcode instance=\"x\"]: [[modxSnippet? &instance=`x`]]\n";
         $out .= "\n";
         $out .= $dumper->dump(array('shortcodes' => $shortcodes), 2);

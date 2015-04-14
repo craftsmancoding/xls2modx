@@ -22,9 +22,41 @@ use Xls2modx\Console\Command\ExportCommand;
 use Xls2modx\Console\Command\MapExportCommand;
 use Xls2modx\Console\Command\MapImportCommand;
 use Xls2modx\Console\Command\MapImportWpCommand;
-
-
 use Symfony\Component\Console\Application;
+
+$modx = get_modx();
+$modx->initialize('mgr');
+$modx->lexicon->load('xls2modx');
+if (!$modx->getOption('xls2modx.license_key') )
+{
+    print $modx->lexicon('missing_license');
+    exit;
+}
+else
+{
+    $License = new \Xls2modx\License($modx);
+    $status = $License->check($modx->getOption('xls2modx.license_key'));
+    // Activate License if needed
+    if ($status == 'inactive')
+    {
+        if (!$License->activate($modx->getOption('xls2modx.license_key')))
+        {
+            print $modx->lexicon('activation_problem');
+            exit;
+        }
+    }
+    // Check it again, in case it just got activated
+    $status = $License->check($modx->getOption('xls2modx.license_key'));
+    if ($status != 'valid')
+    {
+        print $modx->lexicon('missing_expired');
+        exit;
+    }
+    else
+    {
+        $modx->log(\xPDO::LOG_LEVEL_INFO, 'XLS2MODX License status: '. $status);
+    }
+}
 
 $application = new Application('xls2modx', '1.0');
 

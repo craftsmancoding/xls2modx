@@ -85,10 +85,17 @@ class MapExportCommand extends Command
         //$out .= $dumper->dump(array('Hardcoded-Values' => array()), 2);
 
         //$out .= $dumper->dump(array('TVs' => array()), 2);
-        file_put_contents($destination, $out);
+        $result = file_put_contents($destination, $out);
+        if ($result === false)
+        {
+            $output->writeln('<fg=red>ERROR! There was a problem writing the destination file '.$destination.'</fg=red>');
+        }
+        else
+        {
+            $output->writeln('<fg=green>Success!</fg=green>');
+            $output->writeln('Edit the '.$destination.' to customize the mapping from MODX to your XLS file.');
+        }
 
-        $output->writeln('<fg=green>Success!</fg=green>');
-        $output->writeln('Edit the '.$destination.' to customize the mapping from MODX to your XLS file.');
     }
 }
 /*EOF*/

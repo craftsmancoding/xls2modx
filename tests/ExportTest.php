@@ -1,6 +1,6 @@
 <?php
-use Symfony\Component\Yaml\Parser;
-class MapImportWpTest extends PHPUnit_Framework_TestCase {
+
+class ExportTest extends PHPUnit_Framework_TestCase {
 
     public static $modx;
 
@@ -26,7 +26,6 @@ class MapImportWpTest extends PHPUnit_Framework_TestCase {
                 }
             }
         }
-
         // fire up MODX
         require_once dirname(dirname(__FILE__)) . '/vendor/autoload.php';
         require_once MODX_CORE_PATH.'config/'.MODX_CONFIG_KEY.'.inc.php';
@@ -36,14 +35,8 @@ class MapImportWpTest extends PHPUnit_Framework_TestCase {
     }
 
 
-    public function testImport()
+    public function testExport()
     {
-        $str = file_get_contents(dirname(__FILE__).'/sourcefiles/content.txt');
-        preg_match_all('/\[\w+.*\]/Ui', $str, $matches);
-        print_r($matches);
 
-//        $yaml = new Parser();
-//        $map = $yaml->parse(file_get_contents(dirname(__FILE__).'/sourcefiles/import.yml'));
-//        print_r($map);
     }
 }
