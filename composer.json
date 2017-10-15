@@ -21,10 +21,10 @@
     },    
     "require": {
         "php": ">=5.3",
-        "phpoffice/phpexcel": "dev-master",
-        "symfony/filesystem": "dev-master",
-        "symfony/finder": "dev-master",
-        "symfony/console": "dev-master",
+        "phpoffice/phpexcel": "1.8.0",
+        "symfony/filesystem": "2.6.6",
+        "symfony/finder": "2.6.6",
+        "symfony/console": "2.6.6",
         "symfony/yaml": "3.0.*@dev"
     },
     "autoload": {
